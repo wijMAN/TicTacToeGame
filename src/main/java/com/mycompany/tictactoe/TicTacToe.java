@@ -1,41 +1,47 @@
 package com.mycompany.tictactoe;
 
-//***************************************
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
 
 public class TicTacToe implements ActionListener{
 
-	Random random = new Random();
 	JFrame frame = new JFrame();
 	JPanel title_panel = new JPanel();
 	JPanel button_panel = new JPanel();
 	JLabel textfield = new JLabel();
 	JButton[] buttons = new JButton[9];
-	boolean player1_turn;
+        JButton resetButton=new JButton(),xStarts=new JButton(),oStarts=new JButton();
+	boolean playerXTurn;
+        int xWins=0,oWins=0;
 
-	TicTacToe(){
-		
+	TicTacToe(int xWins,int oWins){
+		this.xWins=xWins; this.oWins=oWins;
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(800,800);
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.setSize(600,700);
+//		frame.getContentPane().setBackground(new Color(50,50,50));
+                frame.setTitle("TiC-TaC-ToE");
 		frame.setLayout(new BorderLayout());
 		frame.setVisible(true);
+                frame.setLocationRelativeTo(null);
+                
+                // defining title panel, textfield & adding textfield to title panel & finally adding title panel to frame.
+                title_panel.setLayout(new BorderLayout());
+//		title_panel.setBounds(0,0,100,50);
 		
-		textfield.setBackground(new Color(25,25,25));
-		textfield.setForeground(new Color(25,255,0));
+		textfield.setBackground(new Color(25,25,25));// sets bg color of t-t-toe textfield black
+		textfield.setForeground(Color.green);//(new Color(25,255,0));// sets foreground of textfield
 		textfield.setFont(new Font("Ink Free",Font.BOLD,75));
 		textfield.setHorizontalAlignment(JLabel.CENTER);
-		textfield.setText("Tic-Tac-Toe");
 		textfield.setOpaque(true);
+                textfield.setText("TiC-TaC-ToE");
+
+                title_panel.add(textfield);
+		frame.add(title_panel,BorderLayout.NORTH);
 		
-		title_panel.setLayout(new BorderLayout());
-		title_panel.setBounds(0,0,800,100);
-		
-		button_panel.setLayout(new GridLayout(3,3));
-		button_panel.setBackground(new Color(150,150,150));
+                //defining button panel, buttons, then: adding buttons to button panel, then adding button pannel to frame
+		button_panel.setLayout(new GridLayout(4,3));
+//		button_panel.setBackground(Color.BLUE);//new Color(150,150,150));
 		
 		for(int i=0;i<9;i++) {
 			buttons[i] = new JButton();
@@ -44,12 +50,37 @@ public class TicTacToe implements ActionListener{
 			buttons[i].setFocusable(false);
 			buttons[i].addActionListener(this);
 		}
-		
-		title_panel.add(textfield);
-		frame.add(title_panel,BorderLayout.NORTH);
+                //X button               
+                button_panel.add(xStarts);
+                xStarts.setFont(new Font("Ink Free",Font.BOLD,80));
+                xStarts.setText("X");
+                xStarts.setFocusable(false);
+                xStarts.setForeground(Color.red);
+                xStarts.setBackground(Color.black);
+                xStarts.addActionListener(this);
+                
+                //reset button
+                button_panel.add(resetButton);
+                resetButton.setFont(new Font("Ink Free",Font.ITALIC,60));
+                resetButton.setText("Reset");
+                resetButton.setFocusable(false);
+                resetButton.setForeground(Color.magenta);
+                resetButton.setBackground(Color.black);
+                resetButton.addActionListener(this);
+                
+                //O button
+                button_panel.add(oStarts);
+                oStarts.setFont(new Font("Ink Free",Font.BOLD,80));
+                oStarts.setText("O");
+                oStarts.setFocusable(false);
+                oStarts.setForeground(Color.blue);
+                oStarts.setBackground(Color.black);
+                oStarts.addActionListener(this);
+
+                
 		frame.add(button_panel);
 		
-		firstTurn();
+                for(int i=0;i<9;i++) buttons[i].setEnabled(false);
 	}
         
         @Override
@@ -57,189 +88,94 @@ public class TicTacToe implements ActionListener{
 		
 		for(int i=0;i<9;i++) {
 			if(e.getSource()==buttons[i]) {
-				if(player1_turn) {
-					if(buttons[i].getText()=="") {
-						buttons[i].setForeground(new Color(255,0,0));
+				if(playerXTurn) {
+					if(buttons[i].getText().equals("")) {
+						buttons[i].setForeground(Color.red);//new Color(255,0,0));
 						buttons[i].setText("X");
-						player1_turn=false;
+						playerXTurn=false;
 						textfield.setText("O turn");
 						check();
 					}
+                                        break;
 				}
 				else {
-					if(buttons[i].getText()=="") {
+					if(buttons[i].getText().equals("")) {
 						buttons[i].setForeground(new Color(0,0,255));
 						buttons[i].setText("O");
-						player1_turn=true;
+						playerXTurn=true;
 						textfield.setText("X turn");
 						check();
 					}
+                                        break;
 				}
-			}			
+			}
+                        else if(e.getSource()==resetButton){
+                            frame.dispose();
+                            new TicTacToe(xWins,oWins);
+                            break;
+                        }
+                        else if(e.getSource()==xStarts || e.getSource()==oStarts){
+                            //starting the game
+                            if(e.getSource()==xStarts){
+                                playerXTurn=true;
+                                textfield.setText("X turn");
+                            }
+                            else{
+                                playerXTurn=false;
+                            textfield.setText("O turn");
+                            }
+                            for(int j=0;j<9;j++) buttons[j].setEnabled(true);
+                            xStarts.setEnabled(false);
+                            oStarts.setEnabled(false);
+                            break;
+                        }
 		}
 	}
-        
-        public  void firstTurn() {
-		
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if(random.nextInt(2)==0) {
-			player1_turn=true;
-			textfield.setText("X turn");
-		}
-		else {
-			player1_turn=false;
-			textfield.setText("O turn");
-		}
-	}
-        
+  
         public  void check() {
-		//check X win conditions
-		if(
-				(buttons[0].getText()=="X") &&
-				(buttons[1].getText()=="X") &&
-				(buttons[2].getText()=="X")
-				) {
-			xWins(0,1,2);
-		}
-		if(
-				(buttons[3].getText()=="X") &&
-				(buttons[4].getText()=="X") &&
-				(buttons[5].getText()=="X")
-				) {
-			xWins(3,4,5);
-		}
-		if(
-				(buttons[6].getText()=="X") &&
-				(buttons[7].getText()=="X") &&
-				(buttons[8].getText()=="X")
-				) {
-			xWins(6,7,8);
-		}
-		if(
-				(buttons[0].getText()=="X") &&
-				(buttons[3].getText()=="X") &&
-				(buttons[6].getText()=="X")
-				) {
-			xWins(0,3,6);
-		}
-		if(
-				(buttons[1].getText()=="X") &&
-				(buttons[4].getText()=="X") &&
-				(buttons[7].getText()=="X")
-				) {
-			xWins(1,4,7);
-		}
-		if(
-				(buttons[2].getText()=="X") &&
-				(buttons[5].getText()=="X") &&
-				(buttons[8].getText()=="X")
-				) {
-			xWins(2,5,8);
-		}
-		if(
-				(buttons[0].getText()=="X") &&
-				(buttons[4].getText()=="X") &&
-				(buttons[8].getText()=="X")
-				) {
-			xWins(0,4,8);
-		}
-		if(
-				(buttons[2].getText()=="X") &&
-				(buttons[4].getText()=="X") &&
-				(buttons[6].getText()=="X")
-				) {
-			xWins(2,4,6);
-		}
-		//check O win conditions
-		if(
-				(buttons[0].getText()=="O") &&
-				(buttons[1].getText()=="O") &&
-				(buttons[2].getText()=="O")
-				) {
-			oWins(0,1,2);
-		}
-		if(
-				(buttons[3].getText()=="O") &&
-				(buttons[4].getText()=="O") &&
-				(buttons[5].getText()=="O")
-				) {
-			oWins(3,4,5);
-		}
-		if(
-				(buttons[6].getText()=="O") &&
-				(buttons[7].getText()=="O") &&
-				(buttons[8].getText()=="O")
-				) {
-			oWins(6,7,8);
-		}
-		if(
-				(buttons[0].getText()=="O") &&
-				(buttons[3].getText()=="O") &&
-				(buttons[6].getText()=="O")
-				) {
-			oWins(0,3,6);
-		}
-		if(
-				(buttons[1].getText()=="O") &&
-				(buttons[4].getText()=="O") &&
-				(buttons[7].getText()=="O")
-				) {
-			oWins(1,4,7);
-		}
-		if(
-				(buttons[2].getText()=="O") &&
-				(buttons[5].getText()=="O") &&
-				(buttons[8].getText()=="O")
-				) {
-			oWins(2,5,8);
-		}
-		if(
-				(buttons[0].getText()=="O") &&
-				(buttons[4].getText()=="O") &&
-				(buttons[8].getText()=="O")
-				) {
-			oWins(0,4,8);
-		}
-		if(
-				(buttons[2].getText()=="O") &&
-				(buttons[4].getText()=="O") &&
-				(buttons[6].getText()=="O")
-				) {
-			oWins(2,4,6);
-		}
-	}
-        
-        public  void xWins(int a,int b,int c) {
-		buttons[a].setBackground(Color.GREEN);
-		buttons[b].setBackground(Color.GREEN);
-		buttons[c].setBackground(Color.GREEN);
+		//check X or O win conditions horizontally
+		     if(checkX(0,1,2) || checkO(0,1,2)) win(0,1,2);
+		else if(checkX(3,4,5) || checkO(3,4,5)) win(3,4,5);
+		else if(checkX(6,7,8) || checkO(6,7,8)) win(6,7,8);
+                //checking column wise
+		else if(checkX(0,3,6) || checkO(0,3,6)) win(0,3,6);
+		else if(checkX(1,4,7) || checkO(1,4,7)) win(1,4,7);
+		else if(checkX(2,5,8) || checkO(2,5,8)) win(2,5,8);
+                // checking diagonals
+		else if(checkX(0,4,8) || checkO(0,4,8)) win(0,4,8);
+		else if(checkX(2,4,6) || checkO(2,4,6)) win(2,4,6);
 		
-		for(int i=0;i<9;i++) {
-			buttons[i].setEnabled(false);
-		}
-		textfield.setText("X wins");
+                //Game Ties case
+                else if(allBoxesMarked()){
+                    for(int i=0;i<9;i++) buttons[i].setEnabled(false);
+                    textfield.setText("Game Ties");
+                }
 	}
         
-	public  void oWins(int a,int b,int c) {
-		buttons[a].setBackground(Color.GREEN);
-		buttons[b].setBackground(Color.GREEN);
-		buttons[c].setBackground(Color.GREEN);
-		
-		for(int i=0;i<9;i++) {
-			buttons[i].setEnabled(false);
-		}
-		textfield.setText("O wins");
+        public  void win(int a,int b,int c) {
+		buttons[a].setBackground(Color.orange);
+		buttons[b].setBackground(Color.orange);
+		buttons[c].setBackground(Color.orange);
+                
+		for(int i=0;i<9;i++) buttons[i].setEnabled(false);
+		if(buttons[a].getText().equals("X")){ xWins++; textfield.setText("X wins: "+xWins);}
+                else {oWins++;   textfield.setText("O wins: "+oWins);}
 	}
         
-//        public static void main(String[] args) {
-//            TicTacToe tictactoe = new TicTacToe();
-//        }
-	
-	
+        public boolean allBoxesMarked(){
+                for(int i=0;i<9;i++)  if(buttons[i].getText().equals("")) return false;			
+		return true;
+        }
+        
+        public boolean checkX(int a, int b, int c){
+            return (buttons[a].getText().equals("X") && buttons[b].getText() .equals("X") && buttons[c].getText() .equals("X")); 
+        }
+        
+        public boolean checkO(int a, int b, int c){
+            return (buttons[a].getText().equals("O") && buttons[b].getText() .equals("O") && buttons[c].getText() .equals("O"));
+        }
+        
+        public static void main(String[] args) {
+            new TicTacToe(0,0);
+        }
 }
