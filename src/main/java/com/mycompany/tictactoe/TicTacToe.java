@@ -93,7 +93,7 @@ public class TicTacToe implements ActionListener{
 						buttons[i].setForeground(Color.red);//new Color(255,0,0));
 						buttons[i].setText("X");
 						playerXTurn=false;
-						textfield.setText("O turn");
+						textfield.setText("O 's turn");
 						check();
 					}
                                         break;
@@ -103,7 +103,7 @@ public class TicTacToe implements ActionListener{
 						buttons[i].setForeground(new Color(0,0,255));
 						buttons[i].setText("O");
 						playerXTurn=true;
-						textfield.setText("X turn");
+						textfield.setText("X 's turn");
 						check();
 					}
                                         break;
@@ -118,11 +118,11 @@ public class TicTacToe implements ActionListener{
                             //starting the game
                             if(e.getSource()==xStarts){
                                 playerXTurn=true;
-                                textfield.setText("X turn");
+                                textfield.setText("X 's turn");
                             }
                             else{
                                 playerXTurn=false;
-                            textfield.setText("O turn");
+                            textfield.setText("O 's turn");
                             }
                             for(int j=0;j<9;j++) buttons[j].setEnabled(true);
                             xStarts.setEnabled(false);
